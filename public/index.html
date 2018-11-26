@@ -1,0 +1,85 @@
+<!DOCTYPE <!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Page Title</title>
+    <meta name="description" content="glTF Model">
+    <script src="https://aframe.io/releases/0.7.1/aframe.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body onload="load()">
+    <div id="buttons">
+
+    </div>
+    <div id="displayBlock" style="display:block">
+        <a-scene id="sceneID">
+
+            <a-gltf-model position="0 2 -3"></a-gltf-model>
+
+        </a-scene>
+    </div>
+
+
+</body>
+
+</html>
+
+<script>
+    var result;
+    var buttons = [];
+    var buttonNames = [];
+    var models = [];
+
+    function load() {
+
+        var xmlhttp = new XMLHttpRequest();
+
+
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE) { // XMLHttpRequest.DONE == 4
+                if (xmlhttp.status == 200) {
+                    var result = JSON.parse(this.responseText);
+                    for (key in result) {
+
+                        if (result.hasOwnProperty(key)) {
+                            models.push(result[key].url)
+                            buttonNames.push(result[key].name)
+
+                            // 1. Create the button
+                            var button = document.createElement("button");
+                            button.innerHTML = result[key].name;
+
+                            // 2. Append 
+                            document.getElementById("buttons").appendChild(button);
+
+                            // 3. Add Event
+                            button.addEventListener('click', function(){
+                                changeModel(event.target.innerHTML);
+                            })
+                            buttons.push(button);
+                            
+                        }
+
+                    }
+            
+                } else if (xmlhttp.status == 400) {
+                    alert('There was an error 400');
+                } else {
+                    alert('something else other than 200 was returned');
+                }
+            }
+        };
+
+        xmlhttp.open("GET", "http://localhost:3000/getjson", true);
+        xmlhttp.send();
+
+    }
+
+    function changeModel(name) {
+        var index = buttonNames.indexOf(name)
+        document.querySelector("a-gltf-model").setAttribute('src', models[index])
+
+    }
+</script>
